@@ -53,8 +53,7 @@ namespace BusinessLogic
                     return null;
                 }
 
-                // max pages that can be formed for dataSourceRowCount
-                int maxPages = (int)((dataManager.GetItemCount() / itemsPerPage) + 1);
+                int maxPages = CalculateMaxPages(itemsPerPage, dataItemCount);
 
                 // if input has specified an out of bound page number, set it to last page;
                 if (pageNumber > maxPages)
@@ -73,6 +72,27 @@ namespace BusinessLogic
                 // log the exception here and throw it
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Calculate max pages that can be formed
+        /// </summary>
+        /// <param name="itemsPerPage"></param>
+        /// <param name="dataItemCount"></param>
+        /// <returns></returns>
+        private static int CalculateMaxPages(int itemsPerPage, long dataItemCount)
+        {
+            // max pages that can be formed for dataSourceRowCount
+            int maxPages = (int)((dataItemCount / itemsPerPage));
+
+            // with page size as 10, 45 items will form 5 pages, 
+            // also 50 items will form 5 pages;
+            if (dataItemCount % itemsPerPage > 0)
+            {
+                maxPages++;
+            }
+
+            return maxPages;
         }
     }
 }

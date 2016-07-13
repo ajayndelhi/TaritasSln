@@ -172,6 +172,64 @@ namespace BusinessLogicTest
             Assert.AreEqual<int>(0, exceptList.Count(), "Mismatch in expected and actual results");
         }
 
+        /// <summary>
+        /// Collection has 50 items, 10 items per page and user is asking for 5th page
+        /// </summary>
+        [TestMethod]
+        public void GetPageItems_GetLastPageAtBoundary()
+        {
+            // Arrange
+            IEnumerable<DataClass> dataCollection = this.GetTestDataCollection(50);
+
+            IData data = new InMemoryData(dataCollection);
+            int pageNumber = 5;
+            int itemsPerPage = 10;
+
+            int[] expectedId = new int[] { 41, 42, 43, 44, 45,46,47,48,49,50 };
+
+            // Act
+            IEnumerable<DataClass> outputDataSet = UtilClass.GetPageItems(data, pageNumber, itemsPerPage);
+
+            // Assert
+            Assert.IsNotNull(outputDataSet, "output data set is null");
+            Assert.AreEqual<int>(10, outputDataSet.Count(), string.Format("Returned items count does not match expected item count - Expected: {0}; Actual:{1}", itemsPerPage, outputDataSet.Count()));
+            // check the ids of items returned
+            int[] actualId = outputDataSet.Select(x => x.SerialNumber).ToArray();
+
+            var exceptList = expectedId.Except(actualId);
+            Assert.AreEqual<int>(0, exceptList.Count(), "Mismatch in expected and actual results");
+        }
+
+        /// <summary>
+        /// Collection has 50 items, 10 items per page and user is asking for 50th page
+        /// expected - last page items from 41 to 50
+        /// </summary>
+        [TestMethod]
+        public void GetPageItems_GetLastPageAtBoundary_AskPageTooHigh()
+        {
+            // Arrange
+            IEnumerable<DataClass> dataCollection = this.GetTestDataCollection(50);
+
+            IData data = new InMemoryData(dataCollection);
+            int pageNumber = 50;
+            int itemsPerPage = 10;
+
+            int[] expectedId = new int[] { 41, 42, 43, 44, 45, 46, 47, 48, 49, 50 };
+
+            // Act
+            IEnumerable<DataClass> outputDataSet = UtilClass.GetPageItems(data, pageNumber, itemsPerPage);
+
+            // Assert
+            Assert.IsNotNull(outputDataSet, "output data set is null");
+            Assert.AreEqual<int>(10, outputDataSet.Count(), string.Format("Returned items count does not match expected item count - Expected: {0}; Actual:{1}", itemsPerPage, outputDataSet.Count()));
+            // check the ids of items returned
+            int[] actualId = outputDataSet.Select(x => x.SerialNumber).ToArray();
+
+            var exceptList = expectedId.Except(actualId);
+            Assert.AreEqual<int>(0, exceptList.Count(), "Mismatch in expected and actual results");
+        }
+
+
         [TestMethod]
         public void GetPageItems_AskPageTooHigh()
         {
